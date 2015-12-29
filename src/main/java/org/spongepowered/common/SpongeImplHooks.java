@@ -43,11 +43,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameType;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.Teleporter;
+import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.api.entity.living.player.Player;
-import net.minecraft.world.Teleporter;
-import net.minecraft.world.WorldProvider;
 import org.spongepowered.api.event.SpongeEventFactory;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
@@ -57,6 +57,7 @@ import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.world.World;
 import org.spongepowered.common.event.tracking.ItemDropData;
+import org.spongepowered.common.world.FakePlayer;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -143,7 +144,7 @@ public final class SpongeImplHooks {
     }
 
     public static boolean isFakePlayer(Entity entity) {
-        return false;
+        return entity instanceof FakePlayer;
     }
 
     public static String getModIdFromClass(Class<?> clazz) {
@@ -202,11 +203,15 @@ public final class SpongeImplHooks {
         boolean isAdventure = worldServer.getWorldInfo().getGameType() == GameType.ADVENTURE;
         int spawnFuzz = Math.max(0, worldServer.getMinecraftServer().getSpawnRadius(worldServer));
         int border = MathHelper.floor_double(worldServer.getWorldBorder().getClosestDistance(ret.getX(), ret.getZ()));
-        if (border < spawnFuzz) spawnFuzz = border;
+        if (border < spawnFuzz) {
+            spawnFuzz = border;
+        }
 
         if (!worldServer.provider.getHasNoSky() && !isAdventure && spawnFuzz != 0)
         {
-            if (spawnFuzz < 2) spawnFuzz = 2;
+            if (spawnFuzz < 2) {
+                spawnFuzz = 2;
+            }
             int spawnFuzzHalf = spawnFuzz / 2;
             ret = worldServer.getTopSolidOrLiquidBlock(ret.add(worldServer.rand.nextInt(spawnFuzzHalf) - spawnFuzz, 0, worldServer.rand.nextInt(spawnFuzzHalf) - spawnFuzz));
         }
