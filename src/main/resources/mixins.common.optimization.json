@@ -8,7 +8,8 @@
         "world.MixinWorld_Lighting",
         "world.MixinWorldServer_Lighting",
         "world.MixinChunk_Chunk_Cache",
-        "world.gen.MixinChunkProviderServer_Chunk_Cache"
+        "world.gen.MixinChunkProviderServer_Chunk_Cache",
+        "world.gen.structure.MixinMapGenStructure_Structure_Saving"
     ],
     "injectors": {
         "defaultRequire": 1

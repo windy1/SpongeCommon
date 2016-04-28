@@ -365,6 +365,8 @@ public class SpongeConfig<T extends SpongeConfig.ConfigBase> {
         private WorldCategory world = new WorldCategory();
         @Setting
         private TimingsCategory timings = new TimingsCategory();
+        @Setting
+        private StructureCategory structures = new StructureCategory();
 
         public BlockTrackingCategory getBlockTracking() {
             return this.blockTracking;
@@ -402,6 +404,9 @@ public class SpongeConfig<T extends SpongeConfig.ConfigBase> {
             return this.timings;
         }
 
+        public StructureCategory getStructures() {
+            return this.structures;
+        }
     }
 
     @ConfigSerializable
@@ -672,6 +677,20 @@ public class SpongeConfig<T extends SpongeConfig.ConfigBase> {
         public Map<String, Integer>  getEntityList() {
             return this.entityList;
         }
+    }
+
+    @ConfigSerializable
+    public static class StructureCategory extends Category {
+
+        @Setting(value = "whitelisted-structures", comment = "Structures listed here will be saved to file")
+        public Map<String, Boolean> structureMap = generateMap();
+
+        private static Map<String, Boolean> generateMap() {
+            final Map<String, Boolean> map = new HashMap<>();
+            map.put("Mineshaft", false); // Let everything else be true
+            return map;
+        }
+
     }
 
     @ConfigSerializable
