@@ -40,7 +40,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.Packet;
@@ -116,7 +115,6 @@ import org.spongepowered.common.SpongeImpl;
 import org.spongepowered.common.data.manipulator.mutable.entity.SpongeGameModeData;
 import org.spongepowered.common.data.manipulator.mutable.entity.SpongeJoinData;
 import org.spongepowered.common.data.util.DataConstants;
-import org.spongepowered.common.data.util.NbtDataUtil;
 import org.spongepowered.common.data.value.mutable.SpongeValue;
 import org.spongepowered.common.effect.particle.SpongeParticleEffect;
 import org.spongepowered.common.effect.particle.SpongeParticleHelper;
@@ -406,6 +404,21 @@ public abstract class MixinEntityPlayerMP extends MixinEntityPlayer implements P
     public void setLevel(int level) {
         super.experienceLevel = level;
         this.lastExperience = -1;
+    }
+
+    /**
+     * @author Minecrell, August 22nd, 2016
+     * @reason This overrides the method in EntityPlayer to check the command
+     * block permission instead of only checking for OP.
+     *
+     * TODO: Make permission checks more specific as on Minecraft 1.8.9.
+     * Since Minecraft 1.10 calls this method from several places all of them
+     * will need to be patched to be able to provide more specific permissions.
+     */
+    public boolean canUseCommandBlock() {
+        boolean result = hasPermission("minecraft.commandblock");
+        System.out.println(result);
+        return result;
     }
 
     @Override

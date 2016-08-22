@@ -24,13 +24,10 @@
  */
 package org.spongepowered.common.mixin.core.network;
 
-import static org.spongepowered.common.util.SpongeCommonTranslationHelper.t;
-
 import com.flowpowered.math.vector.Vector3d;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityMinecartCommandBlock;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -42,11 +39,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.PacketThreadUtil;
 import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketCreativeInventoryAction;
-import net.minecraft.network.play.client.CPacketCustomPayload;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
@@ -60,9 +55,7 @@ import net.minecraft.network.play.server.SPacketSetSlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.server.management.PlayerList;
-import net.minecraft.tileentity.CommandBlockBaseLogic;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -72,7 +65,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.api.block.tileentity.Sign;
@@ -94,7 +86,6 @@ import org.spongepowered.api.network.PlayerConnection;
 import org.spongepowered.api.resourcepack.ResourcePack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
-import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.asm.mixin.Final;
@@ -324,86 +315,46 @@ public abstract class MixinNetHandlerPlayServer implements PlayerConnection, IMi
     }
 
     /**
+     * @author Minecrell - August 22nd, 2016
      * @author zml
+     * @reason Allow using command blocks with a permission instead of OP
      *
-     * Purpose: replace the logic used for command blocks to make functional
-     *
-     * @param ci callback
-     * @param packetIn method param
+     * TODO: Restore custom message from Minecraft 1.8.9
+     * TODO: Since Minecraft 1.10 calls canUseCommandBlock in several places we
+     * can no longer always provide the exact permission.
+     * For now it's just minecraft.commandblock everywhere.
      */
-    @Inject(method = "processCustomPayload", at = @At(value = "INVOKE", shift = At.Shift.AFTER,
-            target = "net/minecraft/network/PacketThreadUtil.checkThreadAndEnqueue(Lnet/minecraft/network/Packet;"
-                    + "Lnet/minecraft/network/INetHandler;Lnet/minecraft/util/IThreadListener;)V"), cancellable = true)
-    public void processCommandBlock(CPacketCustomPayload packetIn, CallbackInfo ci) {
-        if ("MC|AdvCdm".equals(packetIn.getChannelName())) {
-            PacketBuffer packetbuffer;
-            try {
-                if (!this.serverController.isCommandBlockEnabled()) {
-                    this.playerEntity.addChatMessage(new TextComponentTranslation("advMode.notEnabled", new Object[0]));
-                    // Sponge: Check permissions for command block usage TODO: Maybe throw an event instead?
-                    // } else if (this.playerEntity.canCommandSenderUseCommand(2, "") && this.playerEntity.capabilities.isCreativeMode) {
-                } else {
-                    packetbuffer = packetIn.getBufferData();
+    /*@Redirect(method = "processCustomPayload", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/entity/player/EntityPlayerMP;canUseCommandBlock()Z"))
+    private boolean onCanUseCommandBlock(EntityPlayerMP entityPlayerMP, CPacketCustomPayload packet) {
+        PacketBuffer buf = packet.getBufferData();
+        buf.markReaderIndex();
 
-                    try {
-                        byte b0 = packetbuffer.readByte();
-                        CommandBlockBaseLogic commandblocklogic = null;
+        String permission;
 
-                        String permissionCheck = null; // Sponge
-                        if (b0 == 0) {
-                            TileEntity tileentity = this.playerEntity.worldObj
-                                    .getTileEntity(new BlockPos(packetbuffer.readInt(), packetbuffer.readInt(), packetbuffer.readInt()));
-
-                            if (tileentity instanceof TileEntityCommandBlock) {
-                                commandblocklogic = ((TileEntityCommandBlock) tileentity).getCommandBlockLogic();
-                                permissionCheck = "minecraft.commandblock.edit.block." + commandblocklogic.getName(); // Sponge
-                            }
-                        } else if (b0 == 1) {
-                            Entity entity = this.playerEntity.worldObj.getEntityByID(packetbuffer.readInt());
-
-                            if (entity instanceof EntityMinecartCommandBlock) {
-                                commandblocklogic = ((EntityMinecartCommandBlock) entity).getCommandBlockLogic();
-                                permissionCheck = "minecraft.commandblock.edit.minecart." + commandblocklogic.getName(); // Sponge
-                            }
-                            // Sponge begin
-                        } else {
-                            throw new IllegalArgumentException("Unknown command block type!");
-                        }
-                        Player spongePlayer = ((Player) this.playerEntity);
-                        if (permissionCheck == null || !spongePlayer.hasPermission(permissionCheck)) {
-                            spongePlayer.sendMessage(t("You do not have permission to edit this command block!").toBuilder()
-                                    .color(TextColors.RED).build());
-                            return;
-                            // Sponge end
-                        }
-
-                        String s1 = packetbuffer.readStringFromBuffer(packetbuffer.readableBytes());
-                        boolean flag = packetbuffer.readBoolean();
-
-                        if (commandblocklogic != null) {
-                            commandblocklogic.setCommand(s1);
-                            commandblocklogic.setTrackOutput(flag);
-
-                            if (!flag) {
-                                commandblocklogic.setLastOutput(null);
-                            }
-
-                            commandblocklogic.updateCommand();
-                            this.playerEntity.addChatMessage(new TextComponentTranslation("advMode.setCommand.success", new Object[] {s1}));
-                        }
-                    } catch (Exception exception1) {
-                        LOGGER.error("Couldn\'t set command block", exception1);
-                    } finally {
-                        packetbuffer.release();
-                    }
-                /*} else { // Sponge: Give more accurate no permission message
-                    this.playerEntity.addChatMessage(new ChatComponentTranslation("advMode.notAllowed", new Object[0]));*/
-                }
-            } finally {
-                ci.cancel();
+        if ("MC|AdvCmd".equals(packet.getChannelName()) && buf.readByte() == 1) {
+            // Special handling when editing an entity command block
+            Entity entity = this.playerEntity.worldObj.getEntityByID(buf.readInt());
+            if (!(entity instanceof EntityMinecartCommandBlock)) {
+                throw new IllegalStateException("Attempting to edit invalid entity as command block");
             }
+
+            permission = "minecraft.commandblock.edit.minecart." + ((EntityMinecartCommandBlock) entity).getCommandBlockLogic().getName();
+        } else {
+            BlockPos pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
+
+            TileEntity tileEntity = this.playerEntity.worldObj.getTileEntity(pos);
+            if (!(tileEntity instanceof TileEntityCommandBlock)) {
+                throw new IllegalStateException("Attempting to edit invalid tile entity as command block");
+            }
+
+            permission = "minecraft.commandblock.edit.block." + ((TileEntityCommandBlock) tileEntity).getCommandBlockLogic().getName();
         }
-    }
+
+        buf.resetReaderIndex();
+
+        return ((Player) this.playerEntity).hasPermission(permission);
+    }*/
 
     /**
      * @author blood - June 6th, 2016
