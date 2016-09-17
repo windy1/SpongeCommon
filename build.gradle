@@ -50,7 +50,7 @@ ext.apiVersion = version
 
 dependencies {
     compile api
-    compile('org.spongepowered:mixin:0.5.13-SNAPSHOT') {
+    compile('org.spongepowered:mixin:0.5.14-SNAPSHOT') {
         exclude module: 'launchwrapper'
     }
 
@@ -68,7 +68,14 @@ dependencies {
     forgeGradleMcDeps('net.minecraft:launchwrapper:1.11') {
         transitive = false
     }
+
+    testCompile 'org.spongepowered:launchwrappertestsuite:1.0-SNAPSHOT'
 }
 
 // Include API dependencies in our POM
 ext.shadedDevProject = api
+
+test {
+    systemProperty 'org.spongepowered.test.launchwrapper.tweaker', 'org.spongepowered.common.launch.TestTweaker'
+    workingDir = {test.temporaryDir}
+}
