@@ -76,6 +76,6 @@ dependencies {
 ext.shadedDevProject = api
 
 test {
-    systemProperty 'org.spongepowered.test.launchwrapper.tweaker', 'org.spongepowered.common.launch.TestTweaker'
+    systemProperty 'org.spongepowered.test.launch.tweaker', 'org.spongepowered.common.launch.TestTweaker'
     workingDir = {test.temporaryDir}
 }
