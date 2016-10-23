@@ -34,12 +34,14 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.transaction.InventoryTransactionResult;
 import org.spongepowered.api.text.translation.Translation;
 import org.spongepowered.common.item.inventory.adapter.InventoryAdapter;
+import org.spongepowered.common.item.inventory.custom.CustomInventory;
 import org.spongepowered.common.item.inventory.query.Query;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public interface MinecraftInventoryAdapter extends InventoryAdapter<IInventory, net.minecraft.item.ItemStack> {
 
@@ -131,6 +133,10 @@ public interface MinecraftInventoryAdapter extends InventoryAdapter<IInventory, 
     @Override
     default <T extends InventoryProperty<?, ?>> Collection<T> getProperties(Class<T> property) {
         if (this.parent() == this) {
+            if (this instanceof CustomInventory) {
+                return ((CustomInventory) this).getProperties().values().stream().filter(p -> property.equals(p.getClass()))
+                        .map(p -> property.cast(p)).collect(Collectors.toList());
+            }
             return Collections.emptyList(); // TODO properties of top level inventory?
         }
         return this.parent().getProperties(this, property);
@@ -149,6 +155,12 @@ public interface MinecraftInventoryAdapter extends InventoryAdapter<IInventory, 
     @Override
     default <T extends InventoryProperty<?, ?>> Optional<T> getProperty(Class<T> property, Object key) {
         if (this.parent() == this) {
+            if (this instanceof CustomInventory) {
+                InventoryProperty forKey = ((CustomInventory) this).getProperties().get(key);
+                if (property.equals(forKey.getClass())) {
+                    return Optional.of(((T) forKey));
+                }
+            }
             return Optional.empty(); // TODO properties of top level inventory?
         }
         return this.parent().getProperty(this, property, key);
