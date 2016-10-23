@@ -43,6 +43,7 @@ import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.inventory.ContainerWorkbench;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryLargeChest;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
@@ -68,13 +69,17 @@ import org.spongepowered.common.item.inventory.adapter.impl.slots.EquipmentSlotA
 import org.spongepowered.common.item.inventory.lens.impl.MinecraftLens;
 import org.spongepowered.common.item.inventory.lens.impl.collections.SlotCollection;
 import org.spongepowered.common.item.inventory.lens.impl.minecraft.ContainerChestInventoryLens;
+import org.spongepowered.common.item.inventory.lens.impl.minecraft.ContainerLens;
 import org.spongepowered.common.item.inventory.lens.impl.minecraft.ContainerPlayerInventoryLens;
 import org.spongepowered.common.item.inventory.lens.impl.slots.CraftingOutputSlotLensImpl;
 import org.spongepowered.common.mixin.core.inventory.MixinInventoryHelper;
 import org.spongepowered.common.util.VecHelper;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -210,8 +215,7 @@ public final class ContainerUtil {
         } else if (container instanceof ContainerPlayer) {
             return new ContainerPlayerInventoryLens((InventoryAdapter<IInventory, ItemStack>) container, collection);
         }
-
-        return null;
+        return new ContainerLens(container, (InventoryAdapter<IInventory, ItemStack>) container, collection);
     }
 
     /**
