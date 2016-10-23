@@ -74,7 +74,7 @@ public abstract class TraitInventoryAdapter implements MinecraftInventoryAdapter
 
     @Override
     public Inventory parent() {
-        return this.parent;
+        return this.parent == null ? this : this.parent; // TODO parent is never set here is that right? If yes then just always return this and remove field.
     }
 
     @SuppressWarnings("unchecked")
