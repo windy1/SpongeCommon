@@ -215,6 +215,9 @@ public final class ContainerUtil {
         } else if (container instanceof ContainerPlayer) {
             return new ContainerPlayerInventoryLens((InventoryAdapter<IInventory, ItemStack>) container, collection);
         }
+        if (container.getInventory().size() == 0) {
+            return null; // Empty Container
+        }
         return new ContainerLens(container, (InventoryAdapter<IInventory, ItemStack>) container, collection);
     }
 
