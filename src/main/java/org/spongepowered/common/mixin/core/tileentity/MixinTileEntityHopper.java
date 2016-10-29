@@ -61,6 +61,7 @@ import org.spongepowered.common.item.inventory.lens.Fabric;
 import org.spongepowered.common.item.inventory.lens.Lens;
 import org.spongepowered.common.item.inventory.lens.SlotProvider;
 import org.spongepowered.common.item.inventory.lens.impl.collections.SlotCollection;
+import org.spongepowered.common.item.inventory.lens.impl.comp.GridInventoryLensImpl;
 import org.spongepowered.common.item.inventory.lens.impl.comp.OrderedInventoryLensImpl;
 import org.spongepowered.common.item.inventory.lens.impl.fabric.DefaultInventoryFabric;
 import org.spongepowered.common.item.inventory.adapter.impl.MinecraftInventoryAdapter;
@@ -87,7 +88,7 @@ public abstract class MixinTileEntityHopper extends MixinTileEntityLockable impl
     public void onConstructed(CallbackInfo ci) {
         this.fabric = new DefaultInventoryFabric(this);
         this.slots = new SlotCollection.Builder().add(5).build();
-        this.lens = new OrderedInventoryLensImpl(0, 5, 1, slots);
+        this.lens = new GridInventoryLensImpl(0, 5, 1, 5, slots);
     }
 
     @Inject(method = "putDropInInventoryAllSlots", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/item/EntityItem;getEntityItem()Lnet/minecraft/item/ItemStack;"))

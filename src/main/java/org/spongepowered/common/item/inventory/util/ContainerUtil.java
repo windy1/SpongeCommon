@@ -205,8 +205,6 @@ public final class ContainerUtil {
         }
     }
 
-    // TODO Inventory - Container lens
-    // TODO Inventory - Add a fallback Container lens
     @SuppressWarnings("unchecked")
     @Nullable
     public static MinecraftLens getLens(net.minecraft.inventory.Container container, SlotCollection collection) {

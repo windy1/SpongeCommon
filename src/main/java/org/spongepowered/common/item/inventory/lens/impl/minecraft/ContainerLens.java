@@ -26,9 +26,10 @@ package org.spongepowered.common.item.inventory.lens.impl.minecraft;
 
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryCraftResult;
+import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import org.spongepowered.api.item.inventory.entity.Hotbar;
-import org.spongepowered.api.item.inventory.type.GridInventory;
 import org.spongepowered.common.item.inventory.adapter.InventoryAdapter;
 import org.spongepowered.common.item.inventory.lens.Lens;
 import org.spongepowered.common.item.inventory.lens.SlotProvider;
@@ -38,6 +39,7 @@ import org.spongepowered.common.item.inventory.lens.impl.MinecraftLens;
 import org.spongepowered.common.item.inventory.lens.impl.comp.GridInventoryLensImpl;
 import org.spongepowered.common.item.inventory.lens.impl.comp.HotbarLensImpl;
 import org.spongepowered.common.item.inventory.lens.impl.comp.OrderedInventoryLensImpl;
+import org.spongepowered.common.item.inventory.lens.impl.slots.OutputSlotLensImpl;
 import org.spongepowered.common.item.inventory.lens.impl.slots.SlotLensImpl;
 
 import java.util.ArrayList;
@@ -67,36 +69,35 @@ public class ContainerLens extends MinecraftLens {
     protected void init(SlotProvider<IInventory, ItemStack> slots) {
         System.out.print("### ContainerLens for: " + container.getClass().getName() + " ###\n");
         // Get all inventories viewed in the Container & count slots & retain order
-        Map<IInventory, Long> viewed = container.inventorySlots.stream()
-                .map(slot -> slot.inventory)
-                .collect(Collectors.groupingBy(i -> i, LinkedHashMap::new, Collectors.counting()));
+        Map<IInventory, List<Slot>> viewed = container.inventorySlots.stream()
+                .collect(Collectors.groupingBy(i -> i.inventory, LinkedHashMap::new, Collectors.toList()));
         int index = 0;
-        for (Map.Entry<IInventory, Long> entry : viewed.entrySet()) {
+        for (Map.Entry<IInventory, List<Slot>> entry : viewed.entrySet()) {
+            int slotCount = entry.getValue().size();
             Lens<IInventory, ItemStack> lens = null;
-            System.out.print(" - " + entry.getKey().getClass().getName() + " (" + entry.getValue() + ")\t");
+            System.out.print(" - " + entry.getKey().getClass().getName() + " (" + slotCount + ")\t");
             if (entry.getKey() instanceof InventoryAdapter) {
                 lens = ((InventoryAdapter) entry.getKey()).getRootLens();
             }
             if (lens == null // Unknown Inventory or
-                    || lens.slotCount() != entry.getValue()) { // Inventory size <> Lens size
-                // TODO PlayerInventoryLens(41) has more slots than the displayed inventory+hotbar(36)
-                if (entry.getValue() == 1) {
-                    System.out.print("???");
+                    || lens.slotCount() != slotCount) { // Inventory size <> Lens size
+                if (entry.getKey() instanceof InventoryCraftResult) { // InventoryCraftResult is always a Slot
+                    Slot slot = entry.getValue().get(0);
+                    lens = new OutputSlotLensImpl(index, item -> slot.isItemValid(((ItemStack) item)),
+                            itemType -> (slot.isItemValid((ItemStack) org.spongepowered.api.item.inventory.ItemStack.of(itemType, 1))));
+                } else if (entry.getKey() instanceof InventoryCrafting) { // InventoryCrafting has width and height
+                    InventoryCrafting craftGrid = (InventoryCrafting) entry.getKey();
+                    lens = new GridInventoryLensImpl(index, craftGrid.getWidth(), craftGrid.getHeight(), craftGrid.getWidth(), slots);
+                } else if (slotCount == 1) { // Unknown - A single Slot
                     lens = new SlotLensImpl(index);
-                } else {
-                    if (lens instanceof PlayerInventoryLens && entry.getValue() == 36) {
-                        // Player Inventory + Hotbar
-                        System.out.print("Player GridLens (27) + HotbarLens (9)\n");
-                        this.player = new GridInventoryLensImpl(index, 9, 3, 9, slots);
-                        this.hotbar = new HotbarLensImpl(index + 27, 9, slots);
-                        lens = null;
-                    }
-                    else
-                    {
-                        System.out.print("???");
-                        lens = new OrderedInventoryLensImpl(index, entry.getValue().intValue(), 1, slots);
-                    }
-                    // TODO try grid?
+                } else if (lens instanceof PlayerInventoryLens && slotCount == 36) { // Player
+                    // Player Inventory + Hotbar
+                    System.out.print("Player GridLens (27) + HotbarLens (9)\n");
+                    this.player = new GridInventoryLensImpl(index, 9, 3, 9, slots);
+                    this.hotbar = new HotbarLensImpl(index + 27, 9, slots);
+                    lens = null;
+                } else { // Unknown
+                    lens = new OrderedInventoryLensImpl(index, slotCount, 1, slots);
                 }
             }
             if (lens != null) {
@@ -105,7 +106,7 @@ public class ContainerLens extends MinecraftLens {
                 this.addSpanningChild(lens);
             }
 
-            index += entry.getValue();
+            index += slotCount;
         }
         System.out.print("#########################################################\n");
     }
