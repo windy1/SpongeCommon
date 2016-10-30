@@ -208,6 +208,7 @@ public final class ContainerUtil {
     @SuppressWarnings("unchecked")
     @Nullable
     public static MinecraftLens getLens(net.minecraft.inventory.Container container, SlotCollection collection) {
+        // TODO remove ContainerChestInventoryLens? ContianerLens can already do it
         if (container instanceof ContainerChest) {
             return new ContainerChestInventoryLens((InventoryAdapter<IInventory, ItemStack>) container, collection, ((ContainerChest) container).numRows);
         } else if (container instanceof ContainerPlayer) {
