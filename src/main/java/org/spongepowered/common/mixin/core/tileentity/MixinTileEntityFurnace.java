@@ -44,6 +44,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.common.interfaces.data.IMixinCustomNameable;
+import org.spongepowered.common.item.inventory.adapter.InventoryAdapter;
 import org.spongepowered.common.item.inventory.adapter.impl.MinecraftInventoryAdapter;
 import org.spongepowered.common.item.inventory.adapter.impl.slots.FuelSlotAdapter;
 import org.spongepowered.common.item.inventory.adapter.impl.slots.OutputSlotAdapter;
@@ -53,6 +54,7 @@ import org.spongepowered.common.item.inventory.lens.SlotProvider;
 import org.spongepowered.common.item.inventory.lens.impl.collections.SlotCollection;
 import org.spongepowered.common.item.inventory.lens.impl.comp.OrderedInventoryLensImpl;
 import org.spongepowered.common.item.inventory.lens.impl.fabric.DefaultInventoryFabric;
+import org.spongepowered.common.item.inventory.lens.impl.minecraft.FurnaceInventoryLens;
 import org.spongepowered.common.item.inventory.lens.impl.slots.FuelSlotLensImpl;
 import org.spongepowered.common.item.inventory.lens.impl.slots.OutputSlotLensImpl;
 
@@ -81,7 +83,7 @@ public abstract class MixinTileEntityFurnace extends MixinTileEntityLockable imp
                 }))
                 .add(OutputSlotAdapter.class, (i) -> new OutputSlotLensImpl(i, (s) -> false, (t) -> false))
                 .build();
-        this.lens = new OrderedInventoryLensImpl(0, 3, 1, slots);
+        this.lens = new FurnaceInventoryLens((InventoryAdapter<IInventory, ItemStack>) this, slots);
     }
 
     @Override

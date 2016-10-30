@@ -49,6 +49,9 @@ public class ContainerPlayerInventoryLens extends MinecraftLens {
         final HotbarLensImpl hotbar = new HotbarLensImpl((((1 + 4) + 4) + 27), 9, slots);
         final SlotLensImpl offHand = new SlotLensImpl(((((1 + 4) + 4) + 27) + 9));
 
+        // TODO actual Container order is:
+        // CraftingOutput (1) -> Crafting (4) -> ArmorSlots (4) -> MainInventory (27) -> Hotbar (9) -> Offhand (1)
+        // how to handle issues like in #939?
         this.addSpanningChild(hotbar);
         this.addSpanningChild(main);
         this.addSpanningChild(armor);
