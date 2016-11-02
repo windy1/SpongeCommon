@@ -41,7 +41,6 @@ import org.spongepowered.common.item.inventory.custom.CustomInventory;
 import org.spongepowered.common.item.inventory.lens.Fabric;
 import org.spongepowered.common.item.inventory.lens.Lens;
 import org.spongepowered.common.item.inventory.lens.impl.MinecraftFabric;
-import org.spongepowered.common.item.inventory.lens.impl.MinecraftLens;
 import org.spongepowered.common.item.inventory.lens.impl.collections.SlotCollection;
 import org.spongepowered.common.item.inventory.observer.InventoryEventArgs;
 import org.spongepowered.common.item.inventory.util.ContainerUtil;
@@ -51,16 +50,16 @@ public abstract class MixinCustomContainer implements MinecraftInventoryAdapter,
 
     @Shadow private CustomInventory inv;
 
-    private Fabric<IInventory> inventory;
+    private Fabric<IInventory> fabric;
     private SlotCollection slots;
-    private MinecraftLens lens;
+    private Lens<IInventory, ItemStack> lens;
 
     @Inject(method = "<init>*", at = @At("RETURN"), remap = false)
     private void onConstructed(EntityPlayer player, CustomInventory inventory, CallbackInfo ci) {
-        this.inventory = MinecraftFabric.of(this);
+        this.fabric = MinecraftFabric.of(this);
         // CustomInventory + Main PlayerInventory + HotBar PlayerInventory
         this.slots = new SlotCollection.Builder().add(inventory.getSizeInventory()).add(36).build();
-        this.lens = ContainerUtil.getLens(((Container)(Object) this), slots);
+        this.lens = ContainerUtil.getLens(this.fabric, ((Container)(Object) this), slots);
     }
 
     @Override
@@ -70,7 +69,7 @@ public abstract class MixinCustomContainer implements MinecraftInventoryAdapter,
 
     @Override
     public Fabric<IInventory> getInventory() {
-        return inventory;
+        return fabric;
     }
 
     @Override
