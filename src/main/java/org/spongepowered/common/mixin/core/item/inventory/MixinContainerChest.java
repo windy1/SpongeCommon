@@ -40,6 +40,6 @@ public abstract class MixinContainerChest extends MixinContainer implements Lens
 
     @Override
     public Lens<IInventory, ItemStack> getRootLens(IInventory inv, InventoryAdapter<IInventory, ItemStack> adapter) {
-        return new ContainerChestInventoryLens(adapter, inventory$getSlotProvider(), this$.numRows);
+        return new ContainerChestInventoryLens(adapter, inventory$getSlotProvider(), this.this$.numRows);
     }
 }

@@ -109,11 +109,6 @@ public abstract class MixinTileEntityFurnace extends MixinTileEntityLockable imp
         return (TileEntityInventory<TileEntityCarrier>) this;
     }
 
-    @Intrinsic
-    public void tilentityinventory$markDirty() {
-        this.markDirty();
-    }
-
     public SlotProvider<IInventory, ItemStack> inventory$getSlotProvider() {
         return this.slots;
     }
@@ -124,6 +119,12 @@ public abstract class MixinTileEntityFurnace extends MixinTileEntityLockable imp
 
     public Fabric<IInventory> inventory$getInventory() {
         return this.fabric;
+    }
+
+    // TODO is this needed here? The same could be done in MixinTileEntityLockable
+    @Intrinsic
+    public void tilentityinventory$markDirty() {
+        this.markDirty();
     }
 
     public Optional<Furnace> tileentityinventory$getTileEntity() {

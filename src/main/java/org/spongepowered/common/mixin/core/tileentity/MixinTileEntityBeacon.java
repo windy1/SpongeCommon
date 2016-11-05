@@ -130,10 +130,6 @@ public abstract class MixinTileEntityBeacon extends MixinTileEntityLockable impl
         return (TileEntityInventory<TileEntityCarrier>) this;
     }
 
-    public void tilentityinventory$markDirty() {
-        ((IInventory) (Object) this).markDirty();
-    }
-
     public SlotProvider<IInventory, ItemStack> inventory$getSlotProvider() {
         return this.slots;
     }
@@ -145,6 +141,12 @@ public abstract class MixinTileEntityBeacon extends MixinTileEntityLockable impl
     public Fabric<IInventory> inventory$getInventory() {
         return this.fabric;
     }
+
+
+    // TODO is this needed here? The same could be done in MixinTileEntityLockable
+    public void tilentityinventory$markDirty() { // TODO wrong prefix?
+        this.markDirty();
+    } // TODO wrong prefix?
 
     public Optional<Beacon> tileentityinventory$getTileEntity() {
         return Optional.of(this);

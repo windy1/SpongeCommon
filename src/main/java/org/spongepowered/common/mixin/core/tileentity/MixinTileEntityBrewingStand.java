@@ -59,8 +59,7 @@ import java.util.Optional;
 
 @NonnullByDefault
 @Mixin(TileEntityBrewingStand.class)
-@Implements({@Interface(iface = MinecraftInventoryAdapter.class, prefix = "inventory$"),
-        @Interface(iface = TileEntityInventory.class, prefix = "tileentityinventory$")})
+@Implements({@Interface(iface = MinecraftInventoryAdapter.class, prefix = "inventory$")})
 public abstract class MixinTileEntityBrewingStand extends MixinTileEntityLockable implements BrewingStand, IMixinCustomNameable {
 
     @Shadow private String customName;
@@ -100,11 +99,6 @@ public abstract class MixinTileEntityBrewingStand extends MixinTileEntityLockabl
         ((TileEntityBrewingStand) (Object) this).setName(customName);
     }
 
-    @Intrinsic
-    public void tilentityinventory$markDirty() {
-        this.markDirty();
-    }
-
     public SlotProvider<IInventory, ItemStack> inventory$getSlotProvider() {
         return this.slots;
     }
@@ -116,6 +110,13 @@ public abstract class MixinTileEntityBrewingStand extends MixinTileEntityLockabl
     public Fabric<IInventory> inventory$getInventory() {
         return this.fabric;
     }
+
+
+    // TODO is this needed here? The same could be done in MixinTileEntityLockable
+    @Intrinsic
+    public void tilentityinventory$markDirty() {
+        this.markDirty();
+    } // TODO wrong prefix?
 
     public Optional<BrewingStand> tileentityinventory$getTileEntity() {
         return Optional.of(this);
