@@ -64,12 +64,12 @@ public abstract class MixinCustomContainer implements MinecraftInventoryAdapter,
 
     @Override
     public Lens<IInventory, ItemStack> getRootLens() {
-        return lens;
+        return this.lens;
     }
 
     @Override
     public Fabric<IInventory> getInventory() {
-        return fabric;
+        return this.fabric;
     }
 
     @Override

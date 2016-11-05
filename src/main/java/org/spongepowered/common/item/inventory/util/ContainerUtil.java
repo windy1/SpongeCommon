@@ -238,14 +238,13 @@ public final class ContainerUtil {
         // Container provides Lens?
         if (container instanceof LensProvider) {
             System.out.print("LensProvider found\n");
-            return ((LensProvider) container).getRootLens(container, new Adapter(MinecraftFabric.of(container)));
-        }
-
-        // TODO Mixin ContainerChest/ContainerPlayer to provide the Lens via Adapter or Lensprovider
-        if (container instanceof ContainerChest) {
-            return new ContainerChestInventoryLens((InventoryAdapter<IInventory, ItemStack>) container, slots, ((ContainerChest) container).numRows);
-        } else if (container instanceof ContainerPlayer) {
-            return new ContainerPlayerInventoryLens((InventoryAdapter<IInventory, ItemStack>) container, slots);
+            InventoryAdapter<IInventory, ItemStack> adapter;
+            if (container instanceof InventoryAdapter) {
+                adapter = ((InventoryAdapter) container);
+            } else {
+                adapter = new Adapter(MinecraftFabric.of(container));
+            }
+            return ((LensProvider) container).getRootLens(null, adapter); // TODO 1st param is null because we have a container and not IInventory
         }
 
         // For those Sheep-Crafting inventories
