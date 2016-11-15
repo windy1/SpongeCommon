@@ -43,6 +43,7 @@ import org.spongepowered.api.item.inventory.property.InventoryDimension;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.text.TranslatableText;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.common.item.inventory.property.ContainerProperty;
 import org.spongepowered.common.item.inventory.property.GuiIDProperty;
 
 import java.util.HashSet;
@@ -138,6 +139,13 @@ public class CustomInventory implements IInventory, IInteractionObject {
         // TODO custom container including filters and other slot stuff
         this.viewers.add(playerIn);
 
+        // Container provided by archetype?
+        Optional<ContainerProperty> cp = this.archetype.getProperty(ContainerProperty.class, ContainerProperty.class.getSimpleName().toLowerCase());
+        if (cp.isPresent()) {
+            return cp.get().getValue().provide(this, playerIn);
+        }
+
+        // Fallback to best guess
         return new CustomContainer(playerIn.inventory, this);
     }
 

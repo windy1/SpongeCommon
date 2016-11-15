@@ -26,8 +26,8 @@ package org.spongepowered.common.item.inventory.property;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
 import org.spongepowered.api.data.Property;
-import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.property.AbstractInventoryProperty;
 
 /**
@@ -40,7 +40,7 @@ public class ContainerProperty extends AbstractInventoryProperty<String, Contain
     }
 
     public interface ContainerProvider {
-        Container provide(Inventory inventory, EntityPlayer player);
+        Container provide(IInventory inventory, EntityPlayer player);
     }
 
     @Override
