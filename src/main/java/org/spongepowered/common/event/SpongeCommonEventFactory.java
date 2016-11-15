@@ -621,7 +621,11 @@ public class SpongeCommonEventFactory {
         if (!callInteractInventoryOpenEvent(cause, player)) {
             return null;
         }
-
+        if (container instanceof IMixinContainer) {
+            // TODO do we want to overwrite the normal container behaviour?
+            // This currently actually only works for the Containers mixed into by MixinContainerCanInteract ; but throws no errors for other containers
+            ((IMixinContainer) container).setCanInteractWith(p -> !p.isDead); // Allow viewing inventory ; except when dead
+        }
         return container;
     }
 }
