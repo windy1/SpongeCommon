@@ -36,14 +36,11 @@ import net.minecraft.inventory.ContainerHorseInventory;
 import net.minecraft.inventory.ContainerMerchant;
 import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.ContainerRepair;
-import org.spongepowered.api.item.inventory.Carrier;
-import org.spongepowered.api.item.inventory.type.CarriedInventory;
+import net.minecraft.inventory.ContainerWorkbench;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Optional;
 
 @Mixin(value = {
         ContainerChest.class,
@@ -56,7 +53,8 @@ import java.util.Optional;
         ContainerBeacon.class,
         ContainerHorseInventory.class,
         ContainerMerchant.class,
-        ContainerPlayer.class
+        ContainerPlayer.class,
+        ContainerWorkbench.class
 }, priority = 1001)
 public abstract class MixinContainerCanInteract extends MixinContainer {
 
