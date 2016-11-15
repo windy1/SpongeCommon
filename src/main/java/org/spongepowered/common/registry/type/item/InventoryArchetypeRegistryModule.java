@@ -59,6 +59,7 @@ import org.spongepowered.common.item.inventory.SpongeInventoryBuilder;
 import org.spongepowered.common.item.inventory.archetype.SlotArchetype;
 import org.spongepowered.common.item.inventory.archetype.SpongeInventoryArchetypeBuilder;
 import org.spongepowered.common.item.inventory.custom.CustomInventory;
+import org.spongepowered.common.item.inventory.property.GuiIDProperty;
 import org.spongepowered.common.registry.SpongeAdditionalCatalogRegistryModule;
 import org.spongepowered.common.text.translation.SpongeTranslation;
 
@@ -154,6 +155,7 @@ public class InventoryArchetypeRegistryModule implements AlternateCatalogRegistr
         CHEST = builder.reset()
                 .with(MENU_GRID)
                 .property(InventoryTitle.of(Text.of(new SpongeTranslation("container.chest"))))
+                .property(new GuiIDProperty("minecraft:chest"))
                 .build("minecraft:chest", "Chest");
 
         DOUBLE_CHEST = builder.reset()
@@ -161,6 +163,7 @@ public class InventoryArchetypeRegistryModule implements AlternateCatalogRegistr
                 .with(CHEST)
                 .property(new InventoryDimension(9, 6))
                 .property(InventoryTitle.of(Text.of(new SpongeTranslation("container.chestDouble"))))
+                .property(new GuiIDProperty("minecraft:chest"))
                 .build("minecraft:double_chest", "DoubleChest");
 
         FURNACE = builder.reset()
@@ -180,12 +183,14 @@ public class InventoryArchetypeRegistryModule implements AlternateCatalogRegistr
                         .build("minecraft:furnace_output", "FurnaceOutput"))
                 .property(new InventoryTitle(Text.of(new SpongeTranslation("container.furnace"))))
                 .property(new InventoryDimension(3, 1))
+                .property(new GuiIDProperty("minecraft:furnace"))
                 .build("minecraft:furnace", "Furnace");
 
         DISPENSER = builder.reset()
                 .with(MENU_GRID)
                 .property(new InventoryDimension(3, 3))
                 .property(InventoryTitle.of(Text.of(new SpongeTranslation("container.dispenser"))))
+                .property(new GuiIDProperty("minecraft:dispenser"))
                 .build("minecraft:dispenser", "Dispenser");
 
         WORKBENCH = builder.reset()
@@ -195,24 +200,28 @@ public class InventoryArchetypeRegistryModule implements AlternateCatalogRegistr
                         .build("minecraft:workbench_grid", "Workbench Grid"))
                 .with(SLOT)
                 .property(InventoryTitle.of(Text.of(new SpongeTranslation("container.crafting"))))
+                .property(new GuiIDProperty("minecraft:crafting_table"))
                 .build("minecraft:workbench", "Workbench");
 
         BREWING_STAND = builder.reset()
                 .with(MENU_ROW)
                 .property(new InventoryDimension(5, 1))
                 .property(InventoryTitle.of(Text.of(new SpongeTranslation("container.brewing"))))
+                .property(new GuiIDProperty("minecraft:brewing_stand"))
                 .build("minecraft:brewing_stand", "BrewingStand");
 
         HOPPER = builder.reset()
                 .with(MENU_ROW)
                 .property(new InventoryDimension(5, 1))
                 .property(InventoryTitle.of(Text.of(new SpongeTranslation("container.hopper"))))
+                .property(new GuiIDProperty("minecraft:hopper"))
                 .build("minecraft:hopper", "Hopper");
 
         BEACON = builder.reset()
                 .with(SLOT)
                 .property(new InventoryDimension(1, 1))
                 .property(InventoryTitle.of(Text.of(new SpongeTranslation("container.beacon"))))
+                .property(new GuiIDProperty("minecraft:beacon"))
                 .build("minecraft:beacon", "Beacon");
 
         ENCHANTING_TABLE = builder.reset()
@@ -220,6 +229,7 @@ public class InventoryArchetypeRegistryModule implements AlternateCatalogRegistr
                 .with(SLOT)
                 .property(new InventoryDimension(2, 1))
                 .property(InventoryTitle.of(Text.of(new SpongeTranslation("container.enchant"))))
+                .property(new GuiIDProperty("minecraft:enchanting_table"))
                 .build("minecraft:enchanting_table", "EnchantingTable");
 
         ANVIL = builder.reset()
@@ -228,6 +238,7 @@ public class InventoryArchetypeRegistryModule implements AlternateCatalogRegistr
                 .with(SLOT)
                 .property(new InventoryDimension(3, 1))
                 .property(InventoryTitle.of(Text.of(new SpongeTranslation("container.repair"))))
+                .property(new GuiIDProperty("minecraft:anvil"))
                 .build("minecraft:anvil", "Anvil");
 
         VILLAGER = builder.reset()
@@ -235,12 +246,14 @@ public class InventoryArchetypeRegistryModule implements AlternateCatalogRegistr
                 .with(SLOT)
                 .with(SLOT)
                 .property(new InventoryDimension(3, 1))
+                .property(new GuiIDProperty("minecraft:villager"))
                 .build("minecraft:villager", "Villager");
 
         HORSE = builder.reset()
                 .with(SLOT)
                 .with(SLOT)
                 .property(new InventoryDimension(2, 1))
+                .property(new GuiIDProperty("EntityHorse")) // hardcoded openGuiHorseInventory
                 .build("minecraft:horse", "Horse");
 
         HORSE_WITH_CHEST = builder.reset()
@@ -250,6 +263,7 @@ public class InventoryArchetypeRegistryModule implements AlternateCatalogRegistr
                         .property(new InventoryDimension(5,3))
                         .build("horse_grid", "HorseGrid"))
                 // TODO Size
+                .property(new GuiIDProperty("EntityHorse")) // hardcoded openGuiHorseInventory
                 .build("minecraft:horse_with_chest", "Horse with Chest");
 
         CRAFTING = builder.reset()

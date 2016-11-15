@@ -37,13 +37,13 @@ import org.spongepowered.api.event.item.inventory.InteractInventoryEvent;
 import org.spongepowered.api.item.inventory.Carrier;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.InventoryArchetype;
-import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.InventoryProperty;
 import org.spongepowered.api.item.inventory.property.InventoryCapacity;
 import org.spongepowered.api.item.inventory.property.InventoryDimension;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.text.TranslatableText;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.common.item.inventory.property.GuiIDProperty;
 
 import java.util.HashSet;
 import java.util.List;
@@ -138,36 +138,12 @@ public class CustomInventory implements IInventory, IInteractionObject {
         // TODO custom container including filters and other slot stuff
         this.viewers.add(playerIn);
 
-        return new CustomContainer(playerIn, this);
+        return new CustomContainer(playerIn.inventory, this);
     }
 
     @Override
     public String getGuiID() {
-        if (archetype == InventoryArchetypes.CHEST || archetype == InventoryArchetypes.DOUBLE_CHEST) {
-            return "minecraft:chest";
-        } else if (archetype == InventoryArchetypes.HOPPER) {
-            return "minecraft:hopper";
-        } else if (archetype == InventoryArchetypes.DISPENSER) {
-            return "minecraft:dispenser";
-        } else if (archetype == InventoryArchetypes.WORKBENCH) {
-            return "minecraft:crafting_table";
-        } else if (archetype == InventoryArchetypes.FURNACE) {
-            return "minecraft:furnace";
-        } else if (archetype == InventoryArchetypes.ENCHANTING_TABLE) {
-            return "minecraft:enchanting_table";
-        } else if (archetype == InventoryArchetypes.ANVIL) {
-            return "minecraft:anvil";
-        } else if (archetype == InventoryArchetypes.BREWING_STAND) {
-            return "minecraft:brewing_stand";
-        } else if (archetype == InventoryArchetypes.BEACON) {
-            return "minecraft:beacon";
-        } else if (archetype == InventoryArchetypes.HORSE || archetype == InventoryArchetypes.HORSE_WITH_CHEST) {
-            return "EntityHorse";
-        } else if (archetype == InventoryArchetypes.VILLAGER) {
-            return "minecraft:villager";
-        } else {
-            return "minecraft:chest";
-        }
+        return archetype.getProperty(GuiIDProperty.class, GuiIDProperty.class.getSimpleName().toLowerCase()).map(p -> p.getValue()).orElse("minecraft:chest");
     }
 
     // IInventory delegation

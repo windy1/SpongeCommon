@@ -25,8 +25,8 @@
 package org.spongepowered.common.item.inventory.custom;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
@@ -34,7 +34,7 @@ public class CustomContainer extends Container {
 
     protected CustomInventory inv;
 
-    public CustomContainer(EntityPlayer player, CustomInventory inventory) {
+    public CustomContainer(InventoryPlayer playerInventory, CustomInventory inventory) {
         this.inv = inventory;
 
         // TODO what significance has the x/y coord on the Slots?
@@ -44,11 +44,11 @@ public class CustomContainer extends Container {
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlotToContainer(new Slot(player.inventory, (row + 1) * 9 + col, 0, 0));
+                this.addSlotToContainer(new Slot(playerInventory, (row + 1) * 9 + col, 0, 0));
             }
         }
         for (int col = 0; col < 9; col++) {
-            this.addSlotToContainer(new Slot(player.inventory, col, 0, 0));
+            this.addSlotToContainer(new Slot(playerInventory, col, 0, 0));
         }
     }
 
