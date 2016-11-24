@@ -111,9 +111,9 @@ public class SpongeEntitySnapshot implements EntitySnapshot {
         }
         this.compound = builder.compound == null ? null : (NBTTagCompound) builder.compound.copy();
         this.worldUuid = builder.worldId == null ? null : builder.worldId;
-        this.position = builder.position == null ? null : builder.position;
-        this.rotation = builder.rotation == null ? null : builder.rotation;
-        this.scale = builder.scale == null ? null : builder.scale;
+        this.position = builder.position == null ? Vector3d.ZERO : builder.position;
+        this.rotation = builder.rotation == null ? Vector3d.ZERO : builder.rotation;
+        this.scale = builder.scale == null ? Vector3d.ZERO : builder.scale;
         this.entityReference = builder.entityReference;
     }
 

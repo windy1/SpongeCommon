@@ -41,19 +41,21 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.common.data.manipulator.mutable.block.SpongeDirectionalData;
 import org.spongepowered.common.data.util.DirectionResolver;
 import org.spongepowered.common.data.value.mutable.SpongeValue;
+import org.spongepowered.common.interfaces.entity.IMixinEntityHanging;
 
 import java.util.List;
 
 import javax.annotation.Nullable;
 
 @Mixin(EntityHanging.class)
-public abstract class MixinEntityHanging extends MixinEntity implements Hanging {
+public abstract class MixinEntityHanging extends MixinEntity implements Hanging, IMixinEntityHanging {
 
     @Shadow @Nullable public EnumFacing facingDirection;
     @Shadow private int tickCounter1;
 
     @Shadow public abstract boolean onValidSurface();
     @Shadow public abstract void onBroken(Entity entity);
+    @Shadow public abstract void updateFacingWithBoundingBox(EnumFacing facingDirectionIn);
 
     private boolean ignorePhysics = false;
 
@@ -82,13 +84,23 @@ public abstract class MixinEntityHanging extends MixinEntity implements Hanging 
     // Data delegated methods
 
     @Override
+    public Direction getDirection() {
+        return this.facingDirection == null ? Direction.NONE : DirectionResolver.getFor(this.facingDirection);
+    }
+
+    @Override
+    public void setDirection(Direction direction) {
+        updateFacingWithBoundingBox(DirectionResolver.getFor(direction));
+    }
+
+    @Override
     public DirectionalData getDirectionalData() {
-        return new SpongeDirectionalData(this.facingDirection == null ? Direction.NONE : DirectionResolver.getFor(this.facingDirection ));
+        return new SpongeDirectionalData(getDirection());
     }
 
     @Override
     public Value<Direction> direction() {
-        return new SpongeValue<>(Keys.DIRECTION, Direction.NONE, this.facingDirection == null ? Direction.NONE : DirectionResolver.getFor(this.facingDirection ));
+        return new SpongeValue<>(Keys.DIRECTION, getDirection());
     }
 
     @Override
@@ -96,4 +108,5 @@ public abstract class MixinEntityHanging extends MixinEntity implements Hanging 
         super.supplyVanillaManipulators(manipulators);
         manipulators.add(getDirectionalData());
     }
+
 }

@@ -630,6 +630,9 @@ public class DataRegistrar {
         dataManager.registerDualProcessor(DirectionalData.class, SpongeDirectionalData.class, ImmutableDirectionalData.class,
                 ImmutableSpongeDirectionalData.class, new SkullRotationDataProcessor());
 
+        dataManager.registerDualProcessor(DirectionalData.class, SpongeDirectionalData.class,
+            ImmutableDirectionalData.class, ImmutableSpongeDirectionalData.class, new HangingDataProcessor());
+
         dataManager.registerDataProcessorAndImpl(BeaconData.class, SpongeBeaconData.class,
                 ImmutableBeaconData.class, ImmutableSpongeBeaconData.class, new BeaconDataProcessor());
 
